@@ -1,0 +1,134 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Authentication
+@using Microsoft.AspNetCore.Identity
+@using EsteticasII.Data.Entities
+@using EsteticasII.ViewModels
+
+@model LoginViewModel
+@inject SignInManager<UsuarioEntity> SignInManager
+
+@{
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
+<section id="wrapper" class="login-register login-sidebar" >
+    <div class="login-box card">
+        <div class="card-body">
+
+            <form class="form-horizontal form-material" id="loginform" asp-action="Login" asp-controller="Account" method="post">
+                <a class="text-center db" href="index.html">
+                                    
+                </a>
+
+                <div class="invisible"><h1>SALTO</h1></div>
+
+                @{ if (ViewData.ModelState.Any())
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading">Inicio de sesión fallido</h4>
+                            <hr />
+                            <ul>
+                                @foreach (var modelState in ViewData.ModelState.Values)
+                                {
+                                    foreach (var error in modelState.Errors)
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                }
+                <div class="form-group m-t-40">
+                    <div class="col-xs-12">
+                        <input asp-for="User" placeholder="Usuario" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <input asp-for="Password" placeholder="Contraseña" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <div class="checkbox checkbox-primary float-left p-t-0">
+                            <input asp-for="RememberMe" type="checkbox" id="checkbox-signup" class="filled-in chk-col-light-blue">
+                            <label for="checkbox-signup" class="text-muted"> Recuérdame </label>
+                        </div>
+                        <a href="javascript:void(0)" id="to-recover" class="text-muted float-right"><i class="fa fa-lock m-r-5"></i> ¿Olvidó su Contraseña?</a>
+                    </div>
+                </div>
+                <div class="form-group text-center m-t-20">
+                    <div class="col-xs-12">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block btn-rounded"><i class="fa fa-sign-in-alt"></i> Ingresar</button>
+                    </div>
+                </div>
+            </form>
+
+            <form asp-action="ForgotPassword" method="post" class="form-horizontal" asp-controller="Account" id="recoverform">
+                <div class="col-xs-12">
+                    <a class="text-center db" href="index.html">
+                        <b><img src="~/images/logo-light-icon.png" alt="homepage" class="dark-logo" /></b>
+                        <span><img src="~/images/logo-light-text.png" alt="homepage" /></span>
+                    </a>
+                    <br /><br />
+                          <div class="form-group">
+                              <h3 style="text-align:center;">Restaurar Contraseña</h3>                              
+                              <div><hr style='border-width: 1px; color:#e2e2e2' /></div>
+                              <div class="col-xs-12">
+                                  <p class="text-muted" style="text-align:left;"><i class="fa fa-check"></i> ¡Indique el email registrado al momento de crear su usuario en el Sistema.! </p>
+                                  <p class="text-muted" style="text-align:left;"><i class="fa fa-check"></i> ¡En el caso de no recordarlo, por favor comunicarse con el administrador del Sistema.! </p>                                 
+                              </div>
+
+                          </div>
+                    
+                    <div class="form-group m-t-40">
+                        <div class="col-xs-12">
+                            <input asp-for="Email" class="form-control" placeholder="Email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer text-center m-sm-auto">
+                        <button class="btn btn-sm btn-primary" type="submit"><i class="fa fa-check"></i> Restaurar contraseña</button>
+                        <button id="to-cancel" class="btn btn-info btn-sm btn-block waves-effect waves-light" type="button"> Cancelar </button>
+                    </div>                  
+                </div>
+
+               
+            </form>
+        </div>
+    </div>
+</section>
+<script src="~/js/GroupApplication.js"></script>
+<script src="~/js/CustomApplication.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $(".preloader").fadeOut();
+    });
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
+    $('#to-recover').on("click", function () {
+        $("#loginform").slideUp();
+        $("#recoverform").fadeIn();
+    });
+
+    $('#to-cancel').on("click", function () {
+        $("#recoverform").hide();
+        $("#loginform").fadeIn();
+    });
+
+    let recuperar = async () => {
+        let obj = GetFormData('recoverform');
+        await MakeRequest('Account/ForgotPassword', obj);
+    };
+
+</script>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
